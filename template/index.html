@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DRESS CODE</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .top-bar {
+            background-color: red;
+            color: white;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .top-bar .title {
+            font-size: 24px;
+        }
+        .top-bar .icons img {
+            width: 24px;
+            margin-left: 10px;
+        }
+        .content {
+            padding: 20px;
+        }
+        .row {
+            margin-bottom: 20px;
+        }
+        .row img {
+            max-width: 100%;
+            height: auto;
+        }
+        .carousel {
+            display: flex;
+            overflow: hidden;
+            position: relative;
+        }
+        .carousel img {
+            width: 100%;
+            height: auto;
+        }
+        .carousel-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+        }
+        .carousel-button.left {
+            left: 0;
+        }
+        .carousel-button.right {
+            right: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="title">DRESS CODE</div>
+        <div class="icons">
+            <img src="mail_icon.png" alt="Mail">
+            <img src="option_icon.png" alt="Option">
+            <img src="document_icon.png" alt="Document">
+        </div>
+    </div>
+    <div class="content">
+        <div class="row">
+            <h3>Reference Image</h3>
+            <div class="carousel">
+                <button class="carousel-button left" onclick="moveCarousel(-1)">&#10094;</button>
+                <img id="referenceImage" src="" alt="Reference Image">
+                <button class="carousel-button right" onclick="moveCarousel(1)">&#10095;</button>
+            </div>
+        </div>
+        <div class="row">
+            <h3>Output - OURS</h3>
+            <img id="outputOurs" src="" alt="Output OURS">
+        </div>
+        <div class="row">
+            <h3>Output - CP-VTON</h3>
+            <img id="outputCpVton" src="" alt="Output CP-VTON">
+        </div>
+        <div class="row">
+            <h3>Target Image</h3>
+            <select id="targetImageSelect" onchange="updateTargetImage()">
+                <option value="mens_upper">Men's Upper</option>
+                <option value="mens_lower">Men's Lower</option>
+                <option value="womens_upper">Women's Upper</option>
+                <option value="womens_lower">Women's Lower</option>
+                <option value="womens_full">Women's Full</option>
+            </select>
+            <img id="targetImage" src="" alt="Target Image">
+        </div>
+        <div class="row">
+            <h3>Upload Images</h3>
+            <input type="file" id="referenceImageUpload">
+            <input type="file" id="targetImageUpload">
+            <button onclick="uploadImages()">Upload and Process</button>
+        </div>
+    </div>
+
+    <script>
+        function moveCarousel(direction) {
+            // Implement carousel functionality
+        }
+
+        function updateTargetImage() {
+            const select = document.getElementById('targetImageSelect');
+            const value = select.value;
+            const targetImage = document.getElementById('targetImage');
+            targetImage.src = `path_to_images/${value}.png`; // Adjust path as needed
+        }
+
+        function uploadImages() {
+            const referenceImage = document.getElementById('referenceImageUpload').files[0];
+            const targetImage = document.getElementById('targetImageUpload').files[0];
+            const formData = new FormData();
+            formData.append('reference_image', referenceImage);
+            formData.append('target_image', targetImage);
+
+            fetch('/process_image', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                const outputOurs = document.getElementById('outputOurs');
+                const outputCpVton = document.getElementById('outputCpVton');
+                
+                outputOurs.src = 'data:image/png;base64,' + btoa(String.fromCharCode.apply(null, new Uint8Array(data.ours)));
+                outputCpVton.src = 'data:image/png;base64,' + btoa(String.fromCharCode.apply(null, new Uint8Array(data.cp_vton)));
+            });
+        }
+    </script>
+</body>
+</html>
